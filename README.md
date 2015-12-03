@@ -10,7 +10,7 @@ This will store the sent email on memory, allowing the recipient to be searched.
 The endpoint used is: `POST http://<docker_gateway>/api/mail.send.json` in place of the real service endpoint `POST https://api.sendgrid.com/api/mail.send.json`.
 
 The configurations would be:
-### Node.js
+##### Node.js
 ``` Javascript
 require('sendgrid')(sendgrid_username, sendgrid_password, {
     "protocol":"http",
@@ -18,7 +18,7 @@ require('sendgrid')(sendgrid_username, sendgrid_password, {
     "port":3000 
 });
 ```
-### Java
+##### Java
 ``` Java
 new SendGrid("SENDGRID USERNAME", "SENDGRID_PASSWORD")
     .setUrl("http://<docker_gateway>:3000");
@@ -27,17 +27,17 @@ new SendGrid("SENDGRID USERNAME", "SENDGRID_PASSWORD")
 ## Read Messages
 This endpoint will allow knowing if an email sending has been requested.
 
-### Endpoint
+##### Endpoint
 `GET http://<docker_gateway>:3000/api/mail.read.json/<email_to_search>`
-### Response
+##### Response
 `{ "total": <how_may_mails>, "results": [<mails>] }`
 
 ## Clear messages
 This will clear all cached emails. This can not be reversed.
 
-### Endpoint
+##### Endpoint
 `GET http://<docker_gateway>:3000/api/mail.clear.json`
-### Response
+##### Response
 `{ "message": "success", "errors": [] }`
 
 ## Run
