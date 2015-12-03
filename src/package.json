@@ -1,0 +1,8 @@
+{
+  "name": "sendgrid-mock",
+  "version": "0.0.1",
+  "description": "Micro WebServer to mock Sengrid's Mail Service REST",
+  "main": "webserver.js",
+  "author": "Tiago Soares <mr.tiagosoares@gmail.com>",
+  "dependencies": {}
+}
