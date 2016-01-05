@@ -6,9 +6,9 @@ Being specially useful when testing it speeds up mail automation, eliminating th
 
 ## TL;DR
 
-´´´
+```
 docker run -d --name mailserver -p 3000:3000 tfsoares/sendgrid-mock
-´´´
+```
 
 ## What to change on Sendgrid
 This will store the sent email on memory, allowing the recipient to be searched.
