@@ -4,6 +4,12 @@ This docker allows mocking the real Sendgrid Rest Server.
 
 Being specially useful when testing it speeds up mail automation, eliminating the need to poll for services like real email servers (gmail, etc.) or Mailinator.
 
+## TL;DR
+
+´´´
+docker run -d --name mailserver -p 3000:3000 tfsoares/sendgrid-mock
+´´´
+
 ## What to change on Sendgrid
 This will store the sent email on memory, allowing the recipient to be searched.
 
