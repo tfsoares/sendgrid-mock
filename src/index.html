@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+</head>
+<body>
+
+	<div style="width: 600px; height: 800px; margin: auto;">
+		<h2>Sendgrid-mock</h2>
+		
+		Email address to search:&nbsp;<input id="address" type="text" />
+		<button id="doSearch" type="button">Search</button>
+		
+		<div id="emails">
+
+		</div>
+
+	</div>
+
+	<script type="text/javascript">
+		$("#address").keyup(function(event){
+			if(event.keyCode == 13){
+				$("#doSearch").click();
+			}
+		});
+		$("#doSearch").click(function(){
+			var address = $("#address").val();
+
+			$.getJSON("/api/mail.read.json/" + address, function( data ) {
+
+				var div = $("#emails");
+				div.html("<h3>Found " + data.total + " emails</h3></br>");
+
+				var items = [];
+
+				$.each(data.results, function(i, obj){
+					div.append("<p>");
+					Object.keys(obj).forEach(function(k){
+						switch(k){
+							case "receivedAt":
+								div.append("<b>"+ k + "</b>: "+new Date(obj[k]).toISOString()+"</br>");
+								break;
+							case "to":
+							case "from":
+							case "subject":
+							case "html":
+								div.append("<b>"+ k + "</b>: "+obj[k]+"</br>");
+						}
+					});
+					div.append("</p>");
+				});
+
+			});
+		});
+	</script>
+
+</body>
+</html>

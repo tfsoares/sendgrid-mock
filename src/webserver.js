@@ -1,26 +1,31 @@
 var log = console.log;
 
-console.log = function(){
+console.log = function() {
 	log.apply(console, [(new Date()).toISOString(), ' | '].concat(arguments[0]));
 };
 
 var http = require('http');
 var querystring = require('querystring');
 var utils = require('util');
+var fs = require('fs');
 
 var stack = [];
 var readURL = '/api/mail.read.json/';
 
 function multiPartBodyToJSON(body) {
-	var regex = /name="(.*)"\s(.+\s)*\s+(.*?)\s--.*/g;
+	var lineBreaker = body.split("\n")[0];
+	var regex = /name="(.*)"\s(.+\s)*\s+([\s|\S]*)/;
+
+	var multipartTokens = body.split(lineBreaker);
 
 	var obj = {};
 	var match;
-	while ((match = regex.exec(body)) !== null) {
-		if (match.index === regex.lastIndex) {
-			re.lastIndex++;
+
+	for (var i = 0; i < multipartTokens.length; i++) {
+		var tokens = regex.exec(multipartTokens[i]);
+		if (tokens) {
+			obj[tokens[1]] = tokens[3].slice(0, -1);
 		}
-		obj[match[1]] = match[3];
 	}
 
 	return obj;
@@ -43,22 +48,25 @@ http.createServer(function(req, res) {
 			});
 
 			req.on('end', function() {
-				// parse the received body data
-				var decodedBody = multiPartBodyToJSON(fullBody);
-				decodedBody.to = decodedBody["to[]"] ? decodedBody["to[]"]:decodedBody["to"];
+					// parse the received body data
+					var decodedBody = multiPartBodyToJSON(fullBody);
+					decodedBody.to = decodedBody["to[]"] ? decodedBody["to[]"] : decodedBody["to"];
+					decodedBody.receivedAt = Date.now();
 
-				//console.log(decodedBody);
+					stack.push(decodedBody);
 
-				stack.push(decodedBody);
+					console.log("Mail to: " + decodedBody.to);
 
-				console.log("Mail to: " + decodedBody.to);
-
-				res.writeHead(200, "OK", { 'Content-Type': 'application/json' });
-				res.end('{ "message": "success", "errors": [] }');
-			});
+					res.writeHead(200, "OK", {
+						'Content-Type': 'application/json'
+					});
+					res.end('{ "message": "success", "errors": [] }');
+				});
 
 		} else {
-			res.writeHead(405, "Method not supported", {'Content-Type': 'text/html'});
+			res.writeHead(405, "Method not supported", {
+				'Content-Type': 'text/html'
+			});
 			res.end('<html><head><title>405 - Method not supported</title></head><body><h1>Method not supported.</h1></body></html>');
 		}
 
@@ -67,13 +75,18 @@ http.createServer(function(req, res) {
 		case '/api/mail.clear.json/':
 
 		stack.length = 0;
-		res.writeHead(200, "OK", { 'Content-Type': 'application/json' });
+		res.writeHead(200, "OK", {
+			'Content-Type': 'application/json'
+		});
 		res.end('{ "message": "success", "errors": [] }');
 
 		console.log("Cleared all emails");
 
 		break;
+		case '/api/mail.read.json':
+		case '/api/mail.read.json/':
 		default:
+
 		if (req.url.indexOf(readURL) == 0) {
 			var email = decodeURIComponent(req.url.substring(readURL.length));
 
@@ -88,11 +101,21 @@ http.createServer(function(req, res) {
 
 			console.log("Found " + mails.length + " mails");
 
-			res.writeHead(200, "OK", { 'Content-Type': 'application/json' });
+			res.writeHead(200, "OK", {
+				'Content-Type': 'application/json'
+			});
 			res.end(JSON.stringify({
 				"total": mails.length,
 				"results": mails
 			}));
-		}
+		}else{
+			res.writeHead(200, "OK", {
+				'Content-Type': 'text/html'
+			});
+			fs.readFile("index.html", function (e, f) {
+				res.end(f);
+			});	
+		}		
+
 	}
 }).listen(3000);
