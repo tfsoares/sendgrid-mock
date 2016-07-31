@@ -2,7 +2,21 @@
   "name": "sendgrid-mock",
   "version": "0.0.1",
   "description": "Micro WebServer to mock Sengrid's Mail Service REST",
-  "main": "webserver.js",
+  "main": "_webserver.js",
   "author": "Tiago Soares <mr.tiagosoares@gmail.com>",
-  "dependencies": {}
+  "dependencies": {
+    "async": "~2.0.0",
+    "boom": "^3.2.2",
+    "chai": "^3.5.0",
+    "hapi": "^13.5.0",
+    "inert": "^4.0.1",
+    "mocha": "^2.5.3",
+    "pm2": "^1.1.3",
+    "sendgrid": "2.0.0",
+    "supertest": "^1.2.0"
+  },
+  "scripts": {
+    "start": "node _webserver.js",
+    "test": "mocha"
+  }
 }
