@@ -23,9 +23,26 @@ function multiPartBodyToJSON(body) {
 
 	for (var i = 0; i < multipartTokens.length; i++) {
 		var tokens = regex.exec(multipartTokens[i]);
-		if (tokens) {
-			obj[tokens[1]] = tokens[3].slice(0, -1);
+		if (!tokens) {
+			continue;
 		}
+
+		var key = tokens[1];
+		var value = tokens[3].slice(0, -1);
+
+		if (!obj[key]) {
+			obj[key] = value;
+			continue;
+		}
+
+		// if obj[key] already exists, check for array
+		if (Array.isArray(obj[key])) {
+			obj[key].push(value);
+			continue;
+		}
+
+		// if not already an array, convert to array then push onto it
+		obj[key] = [ obj[key] ].concat(value);
 	}
 
 	return obj;
